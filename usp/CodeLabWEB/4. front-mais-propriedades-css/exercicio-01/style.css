@@ -1,0 +1,54 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    background-color: #F5F5F5;
+    font-family: 'Roboto';
+    margin-top: 20px;
+}
+
+.card p {
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-size: 18px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 15px;
+    width: 432px;
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 134px;
+    padding: 30px;
+    padding-bottom: 90px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.card__img {
+    margin-bottom: 30px;
+}
+
+.button {
+    text-decoration: none;
+    font-size: 16px;
+    color: white;
+    font-size: 16px;
+    padding: 14px 63px;
+    border-radius: 5px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.vermelho {
+    background-color: #ED6755;
+}
+
+.azul {
+    background-color: #1C1B5E;
+}
+
+.card__caixa {
+    text-align: right;
+}
