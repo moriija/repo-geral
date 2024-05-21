@@ -1,0 +1,16 @@
+* {
+    background-color: burlywood;
+}
+
+body {
+    padding: 50px;
+}
+
+img {
+    border-radius: 10px;
+}
+
+ul,
+p {
+    margin-bottom: 100px;
+}

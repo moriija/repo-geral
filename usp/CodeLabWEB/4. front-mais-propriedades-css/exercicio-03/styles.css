@@ -1,0 +1,18 @@
+html {
+    background-color: aquamarine;
+}
+
+.card {
+    background-color: white;
+    display: flex;
+    width: 400px;
+    height: 300px;
+
+    margin: auto;
+    margin-top: 100px;
+    padding: 60px;
+}
+
+div>h2 {
+    display: block;
+}
