@@ -58,6 +58,5 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "stdio.h": "c",
-    "EP-01.C": "cpp"
   }
 }
