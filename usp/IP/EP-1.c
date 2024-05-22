@@ -12,6 +12,7 @@ int popular(int vetor[])
     return 1;
 }
 
+// CONSERTAR PARA i=40, PARA merge[40]
 int ordenar(int vetor[])
 {
     int temp;
@@ -30,6 +31,36 @@ int ordenar(int vetor[])
             }
         }
     }
+    return 1;
+}
+
+int get_merge(int vet1[], int vet2[], int merge[])
+{
+    int parou = 0;
+    // primeiro vetor
+    for (int i = 0; i < 20; i++)
+    {
+        if (vet1[i] == -1)
+        {
+            parou = i;
+            break;
+        }
+        if (!checarRep(vet1[i], merge))
+            merge[i] = vet1[i];
+    }
+
+    // segundo vetor
+    for (int i = 0; i < 20; i++)
+    {
+        if (vet2[i] == -1)
+        {
+            break;
+        }
+        if (!checarRep(vet2[i], merge))
+            merge[parou + i] = vet2[i];
+    }
+
+    ordenar(merge);
     return 1;
 }
 
@@ -67,7 +98,8 @@ int main()
     printf("vetor antes: ");
     for (int i = 0; i < 20; i++)
     {
-        printf("%d, ", vet1[i]);
+        if (vet1[i] != -1)
+            printf("%d, ", vet1[i]);
     }
     printf("\n");
 
@@ -75,10 +107,20 @@ int main()
     ordenar(vet1);
     ordenar(vet2);
 
-    printf("vetor depois: ");
+    printf("vetor ordenado: ");
     for (int i = 0; i < 20; i++)
     {
-        printf("%d, ", vet1[i]);
+        if (vet1[i] != -1)
+            printf("%d, ", vet1[i]);
     }
     printf("\n");
+
+    // c)
+    int merge[40];     // feito em uma função; não deve ter valores repetidos
+    int repetidos[40]; // repetições presentes em vet1 e vet2
+
+    popular(merge);
+    popular(repetidos);
+
+    get_merge(vet1, vet2, merge);
 }
