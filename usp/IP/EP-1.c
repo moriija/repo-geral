@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 
-int imprimir(int vetor[])
+int imprimir(int vetor[], int size)
 {
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < size; i++)
     {
         if (vetor[i] != -1)
             printf("%d, ", vetor[i]);
@@ -14,9 +14,9 @@ int imprimir(int vetor[])
     return 1;
 }
 
-int popular(int vetor[], int n)
+int popular(int vetor[], int n, int size)
 {
-    for (int i = 0; i < 40; i++)
+    for (int i = 0; i < size; i++)
     {
         vetor[i] = n;
     }
@@ -24,14 +24,14 @@ int popular(int vetor[], int n)
     return 1;
 }
 
-int ordenar(int vetor[])
+int ordenar(int vetor[], int size)
 {
     int temp;
-    for (int j = 0; j < 40; j++)
+    for (int j = 0; j < size; j++)
     {
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < size; i++)
         {
-            if (i == 19 || vetor[i] == -1)
+            if (i == size-1 || vetor[i] == -1)
                 break;
 
             if (vetor[i] > vetor[i + 1] && vetor[i] != -1 && vetor[i + 1] != -1)
@@ -100,8 +100,40 @@ int get_merge(int vet1[], int vet2[], int merge[], int repetidos[])
         }
     }
 
-    ordenar(merge);
+    ordenar(merge, 40);
+    ordenar(repetidos, 40);
     return 1;
+}
+
+
+int contagemRep(int repetidos[])
+{
+    int visitado[40]; // cada elemento (se não houver um igual) somará +1
+    popular(visitado, 0, 40);
+
+    int index;
+
+    for (int i=0; i<40; i++)
+    {
+        if(repetidos[i] == -1){
+            break;
+        }   
+
+        // a partir de index, saberemos quantaz vezes repetidos[i] aparece
+        index = i;
+
+        // procurar repetidos[i] em visitado[]
+        for(int j=0; j<40; j++){
+            if (repetidos[i] == visitado[j]){
+                index = j;
+                break;
+            }
+        }
+
+        visitado[index]++;
+
+        imprimir(visitado, 40);
+    }
 }
 
 int main()
@@ -109,8 +141,8 @@ int main()
     // a)
     int vet1[20];
     int vet2[20];
-    popular(vet1, -1);
-    popular(vet2, -1);
+    popular(vet1, -1, 20);
+    popular(vet2, -1, 20);
 
     int temp;
 
@@ -136,36 +168,35 @@ int main()
     }
 
     printf("vetor1 antes: ");
-    imprimir(vet1);
+    imprimir(vet1, 20);
     printf("vetor2 antes: ");
-    imprimir(vet2);
+    imprimir(vet2, 20);
     printf("\n");
 
     // b)
-    ordenar(vet1);
-    ordenar(vet2);
+    ordenar(vet1, 20);
+    ordenar(vet2, 20);
 
     printf("vetor1 ordenado: ");
-    imprimir(vet1);
+    imprimir(vet1, 20);
     printf("vetor2 ordenado: ");
-    imprimir(vet2);
+    imprimir(vet2, 20);
     printf("\n");
 
     // c)
     int merge[40];     // feito em uma função; não deve ter valores repetidos
     int repetidos[40]; // repetições presentes em vet1 e vet2
 
-    popular(merge, -1);
-    popular(repetidos, -1);
+    popular(merge, -1, 40);
+    popular(repetidos, -1, 40);
 
     get_merge(vet1, vet2, merge, repetidos);
 
     printf("vetor merge: ");
-    imprimir(merge);
+    imprimir(merge, 40);
 
     printf("numeros repetidos: ");
-    imprimir(repetidos);
+    contagemRep(repetidos);
 
-    int repVisitado[40];
-    popular(repVisitado, 0);
 }
+
