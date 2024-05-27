@@ -8,9 +8,14 @@ int imprimir(int vetor[], int size)
     for (int i = 0; i < size; i++)
     {
         if (vetor[i] != -1)
-            printf("%d, ", vetor[i]);
+        {
+            if (i == 0)
+                printf("%d", vetor[i]);
+            else
+                printf(", %d", vetor[i]);
+        }
     }
-    printf("\n");
+    printf(".\n");
     return 1;
 }
 
@@ -31,7 +36,7 @@ int ordenar(int vetor[], int size)
     {
         for (int i = 0; i < size; i++)
         {
-            if (i == size-1 || vetor[i] == -1)
+            if (i == size - 1 || vetor[i] == -1)
                 break;
 
             if (vetor[i] > vetor[i + 1] && vetor[i] != -1 && vetor[i + 1] != -1)
@@ -105,34 +110,49 @@ int get_merge(int vet1[], int vet2[], int merge[], int repetidos[])
     return 1;
 }
 
-
 int contagemRep(int repetidos[])
 {
-    int visitado[40]; // cada elemento (se não houver um igual) somará +1
-    popular(visitado, 0, 40);
+    int ocorrencia[40]; // cada elemento (se não houver um igual) somará +1
+    int visitado[40];
+    popular(ocorrencia, 0, 40);
+    popular(visitado, -1, 40);
 
     int index;
 
-    for (int i=0; i<40; i++)
+    for (int i = 0; i < 40; i++)
     {
-        if(repetidos[i] == -1){
+        if (repetidos[i] == -1)
+        {
             break;
-        }   
+        }
 
         // a partir de index, saberemos quantaz vezes repetidos[i] aparece
         index = i;
 
         // procurar repetidos[i] em visitado[]
-        for(int j=0; j<40; j++){
-            if (repetidos[i] == visitado[j]){
+        for (int j = 0; j < 40; j++)
+        {
+            if (repetidos[i] == visitado[j])
+            {
                 index = j;
                 break;
             }
         }
 
-        visitado[index]++;
+        visitado[index] = repetidos[index];
 
-        imprimir(visitado, 40);
+        ocorrencia[index]++;
+
+        // imprimir(ocorrencia, 40);
+        //  imprimir(visitado, 40);
+    }
+
+    for (int i = 0; i < 40; i++)
+    {
+        if (ocorrencia[i] >= 1)
+        {
+            printf("%d apareceu %d vezes.\n", visitado[i], ocorrencia[i] + 1);
+        }
     }
 }
 
@@ -195,8 +215,7 @@ int main()
     printf("vetor merge: ");
     imprimir(merge, 40);
 
-    printf("numeros repetidos: ");
+    printf("\nnumeros repetidos:\n");
+    // imprimir(repetidos, 40);
     contagemRep(repetidos);
-
 }
-
