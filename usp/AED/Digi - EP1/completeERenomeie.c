@@ -4,7 +4,7 @@
 /**                                                                 **/
 /**   Primeiro Exercicio-Programa                                   **/
 /**                                                                 **/
-/**   Isabella Cremonezi Morija        14579951   <turma>           **/
+/**   Isabella Cremonezi Morija     14579951      turma 94          **/
 /**                                                                 **/
 /*********************************************************************/
 
@@ -129,14 +129,16 @@ int calcularProblemasNaoResolvidos(MARATONA* mar){
 	for (int i=0; i<PROBLEMAS; i++){
 
 		// para cada time
-		TIME* time = mar->cabeca->prox->time;
+		ELEMENTO* elem = mar->cabeca->prox;
 
 		for (int j=0; j < mar->numTimes; j++){
 			// comparar se o time resolveu o problema
-			if (time->resolvidos[i] == true){
+			if (elem->time->resolvidos[i] == true){
 				problemasNaoResolvidos--;
 				break;
 			}
+			
+			elem = elem->prox;
 		}
 	}
 
@@ -162,7 +164,7 @@ bool tratarSubmissao(MARATONA* mar, int id, int problema, int tempo, bool acerto
 	if (id < 1 || id > mar->numTimes) return false;
 	if (problema < 0 || problema > PROBLEMAS-1) return false;
 	
-	// procurar elemento do time por id (começa com id 1)
+	// procurar elemento do time por id
 	ELEMENTO* elem = mar->cabeca->prox;
 	for (int i=0; i < mar->numTimes; i++){
 		if (elem->time->id == id)
@@ -187,26 +189,24 @@ bool tratarSubmissao(MARATONA* mar, int id, int problema, int tempo, bool acerto
 		time->minutos[problema] = tempo;
 
 
-		// checar n° de problemas resolvidos com time anterior (se presente)
-		// caso resolvidos iguais, desempate é a penalidade
-		while(1)
+		// checar n° de problemas resolvidos com Time Anterior (se presente)
+		while(elem->ant != mar->cabeca)
 		{
-			if ( elem->ant == mar->cabeca ) return true;
-
 			TIME* timeAnt = elem->ant->time;
 			int resolvidosTime = calcularProblemasResolvidosDoTime(time);
 			int resolvidosAnt = calcularProblemasResolvidosDoTime(timeAnt);
 
-			if ((resolvidosTime > resolvidosAnt) || ((resolvidosTime == resolvidosAnt) && (calcularPenalidade(time) < calcularPenalidade(timeAnt)))){
-				// trocar de posição
+			// caso resolvidos dos times são iguais, o desempate é a penalidade.
+			if ( (resolvidosTime > resolvidosAnt) || ( (resolvidosTime == resolvidosAnt) && (calcularPenalidade(time) < calcularPenalidade(timeAnt)) ) ){
+				// trocar de posição com anterior
 				elem->ant->time = time;
 				elem->time = timeAnt;
 			}
 			else break;
+
 			elem = elem->ant;
 		}
 	}
-
 
 	return true;
 }
