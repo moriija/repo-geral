@@ -1,11 +1,11 @@
 /*********************************************************************/
-/**   ACH2023 - Algoritmos e Estruturas de Dados I		  **/
-/**   EACH-USP - Segundo Semestre de 2024			   **/
-/**								 **/
-/**   Segundo Exercicio-Programa				    **/
-/**								 **/
-/**   <nome do(a) aluno(a)>		  <numero USP>   <turma> **/
-/**								 **/
+/**   ACH2023 - Algoritmos e Estruturas de Dados I		 			 **/
+/**   EACH-USP - Segundo Semestre de 2024			  				 **/
+/**																	 **/
+/**   Segundo Exercicio-Programa				    				**/
+/**																	 **/
+/**   Isabella Cremonezi Morija 		  14579951   94 			**/
+/**																	 **/
 /*********************************************************************/
 
 
@@ -158,11 +158,24 @@ void exibir(PONT raiz, char* palavra){
 Funcao que recebe o endereco do no raiz de uma trie (raiz), o endereco de um arranjo de caracteres (palavra) e o tamanho da palavra presente no arranjo de caracteres (n) e retorna o numero de copias dessa palavra na trie. Provavelmente voce desejara realizar a busca chamando uma funcao auxiliar recursiva (desenvolvida por voce) que tenha, ao menos, um parametro adicional para indicar qual a letra atual da busca. Caso a palavra nao exista na trie, sua funcao devera retornar 0 (zero), caso contrario, devera retornar o valor do campo contador do no correspondente a ultima letra da palavra.
 */
 int buscarPalavra(PONT raiz, char* palavra, int n){
-  int resposta = 0;
-  
-  /* Complete o codigo desta funcao */ 
+	// retornar numero de copias da palavra
+	/* Complete o codigo desta funcao */
 
-  return resposta;
+	PONT p = raiz;
+	for(int i=0; p != NULL; i++){
+
+		// traduzir letra em numro 0-25
+		int letra = palavra[i] - VALOR_a;
+
+		// p é NO da letra
+		p = p->filhos[letra];
+
+		// palavra não existe na trie
+		if (p == NULL) return 0;
+		
+		// ultima letra da palavra
+		if (i == n) return p->contador;
+	}
 }
 
 
@@ -177,10 +190,34 @@ Funcao que recebe o endereco do no raiz de uma trie (raiz), o endereco de um arr
 */
 void inserir(PONT raiz, char* palavra, int n){
 
-  /* Complete o codigo desta funcao */ 
-  
-}
+	/* Complete o codigo desta funcao */ 
+	PONT p = raiz;
+	
+	for(int i=0; i < n; i++){
+		// valor numérico da letra
+		int letra = palavra[i] - VALOR_a;
 
+		if (p->filhos == NULL)
+		{
+			// criar arranjo pfilhos
+			p->filhos = (PONT*)malloc(sizeof(PONT) * 26);
+			for(int j=0; j<26; j++)
+				p->filhos[j] = NULL;
+		}
+
+		if (p->filhos[letra] == NULL){
+			// criar node para letra
+			p->filhos[letra] = criarNo();
+		}
+
+	
+		p = p->filhos[letra];
+	}
+	// ultima letra
+	p->contador++;
+
+	return;
+}
 
 
 /*
@@ -193,10 +230,62 @@ Funcao que recebe o endereco do no raiz de uma trie (raiz), o endereco de um arr
     (b) Caso o no correspondente a ultima letra nao possua filhos ele devera ser excluido, e o ponteiro para ele no arranjo de filhos de seu pai deve ser atualizado para NULL. Se apos essa exclusao, o pai desse no nao possuir mais filhos, seu arranjo de filhos deve ser excluido (memoria liberada) e seu campo filhos deve receber o valor NULL. Adicionalmente, se o campo contador do no pai valer zero este tambem deve ser apagado (e o processo iii.b deve ser repetido enquanto cada no [na volta da recursao] nao possuir mais filhos e nao for um no final de uma palavra).
 Observacao: o no raiz nunca devera ser excluido, porem seu arranjo de filhos podera ser excluido caso este no nao possua filhos (trie sem nenhuma palavra) e, neste caso, seu campo filhos devera ser atualizado para NULL.
 */
+
+void excluirTodasAux(PONT pAux, PONT pUltimo, int i, char* palavra){
+	
+	if (pAux != pUltimo){
+		int letra = palavra[i+1] - VALOR_a;
+		excluirTodasAux(pAux->filhos[letra], pUltimo, i+1, palavra);
+	}
+
+	free(pAux->filhos);
+	free(pAux);
+	return;
+}
+
 void excluirTodas(PONT raiz, char* palavra, int n){
 
-  /* Complete o codigo desta funcao */ 
+	/* Complete o codigo desta funcao */
+	// excluir copias da palavra
+	// é possivel que a palavra nao exista
 
+	PONT p = raiz;
+
+	for(int i=0; i<n; i++){
+		int letra = palavra[i] - VALOR_a;
+
+		p = p->filhos[letra];
+		// palavra não presente na trie
+		if (p == NULL) return;
+	}
+	// ultima letra
+
+	// não tem filhos
+	if (contarNos(p) == 1){
+		PONT pAux = raiz;
+
+		// excluir nodes não pertencentes a palavras
+		int i=0;
+		PONT pAnterior;
+		int letra;
+		while(contarPalavrasDiferentes(pAux) > 1){
+			letra = palavra[i] - VALOR_a;
+			pAnterior = pAux;
+			pAux = pAux->filhos[letra];
+			i++;
+		}
+		// excluir de pAux até p
+		excluirTodasAux(pAux, p, i, palavra);
+
+		pAnterior->filhos[letra] = NULL;
+	}
+
+	// tem filhos
+	else{
+		p->contador = 0;
+	}
+
+	return;
 }
 
 
@@ -206,8 +295,18 @@ Funcao que recebe o endereco do no raiz de uma trie (raiz), o endereco de um arr
 */
 void excluir(PONT raiz, char* palavra, int n){
 
-  /* Complete o codigo desta funcao */ 
-
+	/* Complete o codigo desta funcao */ 
+	PONT p = raiz;
+	for(int i=0; i<n; i++){
+		int letra = palavra[i] - VALOR_a;
+		if ( p->filhos == NULL || p->filhos[letra] == NULL ){
+			return;
+		}
+		p = p->filhos[letra];
+	}
+	
+	if(contarPalavrasDiferentes(p)>1) excluirTodas(raiz, palavra, n);
+	else p->contador--;
 }
 
 
