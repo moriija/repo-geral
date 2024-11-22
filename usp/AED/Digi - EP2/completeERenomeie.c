@@ -192,29 +192,35 @@ void inserir(PONT raiz, char* palavra, int n){
 
 	/* Complete o codigo desta funcao */ 
 	PONT p = raiz;
-	
+	bool isFolha = false;
+
 	for(int i=0; i < n; i++){
 		// valor numérico da letra
 		int letra = palavra[i] - VALOR_a;
 
-		if (p->filhos == NULL)
-		{
+		if (p->filhos == NULL){
 			// criar arranjo pfilhos
-			p->filhos = (PONT*)malloc(sizeof(PONT) * 26);
-			for(int j=0; j<26; j++)
+			p->filhos = (PONT*)malloc(sizeof(PONT) * LETRAS);
+			for(int j=0; j<LETRAS; j++)
 				p->filhos[j] = NULL;
+
+			isFolha = true;
 		}
 
 		if (p->filhos[letra] == NULL){
 			// criar node para letra
 			p->filhos[letra] = criarNo();
-		}
 
+			isFolha = true;
+		}
 	
 		p = p->filhos[letra];
 	}
-	// ultima letra
+
+	// contador da ultima letra define a palavra
 	p->contador++;
+
+	if(isFolha) p->filhos = NULL;
 
 	return;
 }
@@ -236,9 +242,13 @@ void excluirTodasAux(PONT pAux, PONT pUltimo, int i, char* palavra){
 	if (pAux != pUltimo){
 		int letra = palavra[i+1] - VALOR_a;
 		excluirTodasAux(pAux->filhos[letra], pUltimo, i+1, palavra);
+		pAux->filhos[letra] = NULL;
 	}
 
-	free(pAux->filhos);
+	if(pAux->filhos != NULL){
+		free(pAux->filhos);
+		pAux->filhos = NULL;
+	}
 	free(pAux);
 	return;
 }
@@ -254,30 +264,40 @@ void excluirTodas(PONT raiz, char* palavra, int n){
 	for(int i=0; i<n; i++){
 		int letra = palavra[i] - VALOR_a;
 
-		p = p->filhos[letra];
 		// palavra não presente na trie
-		if (p == NULL) return;
+		if(p->filhos == NULL || p->filhos[letra] == NULL) return;
+
+		p = p->filhos[letra];
 	}
 	// ultima letra
 
-	// não tem filhos
-	if (contarNos(p) == 1){
-		PONT pAux = raiz;
-
+	// não tem filhos (é a ultima palavra)
+	if (p->filhos == NULL){
+		printf("jfa9eifjaeji0\n");
 		// excluir nodes não pertencentes a palavras
-		int i=0;
-		PONT pAnterior;
+		PONT pDiverge = raiz;
+		PONT pAnterior = NULL;
 		int letra;
-		while(contarPalavrasDiferentes(pAux) > 1){
+		int i=0;
+		while(contarPalavrasDiferentes(pDiverge) > 1){
+			pAnterior = pDiverge;
 			letra = palavra[i] - VALOR_a;
-			pAnterior = pAux;
-			pAux = pAux->filhos[letra];
+			pDiverge = pDiverge->filhos[letra];
 			i++;
 		}
-		// excluir de pAux até p
-		excluirTodasAux(pAux, p, i, palavra);
+		
+		// raiz não pode ser excluida
+		if (pDiverge == raiz && pDiverge->filhos[palavra[0]] != NULL)
+			pDiverge = pDiverge->filhos[palavra[0]];
 
-		pAnterior->filhos[letra] = NULL;
+		// excluir a partir do primeiro node não pertencente a palavra
+		excluirTodasAux(pDiverge, p, i, palavra);
+
+		// setar node anterior ao pDivergente
+		if (pAnterior != NULL){
+			if (contarPalavrasDiferentes(pAnterior) == 1) pAnterior->filhos = NULL;
+			else pAnterior->filhos[letra] = NULL;
+		}
 	}
 
 	// tem filhos
