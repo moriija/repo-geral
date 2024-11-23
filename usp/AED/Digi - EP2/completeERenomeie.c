@@ -220,8 +220,10 @@ void inserir(PONT raiz, char* palavra, int n){
 	// contador da ultima letra define a palavra
 	p->contador++;
 
-	if(isFolha) p->filhos = NULL;
-
+	if(isFolha) {
+		free(p->filhos);
+		p->filhos = NULL;
+	}
 	return;
 }
 
@@ -237,19 +239,17 @@ Funcao que recebe o endereco do no raiz de uma trie (raiz), o endereco de um arr
 Observacao: o no raiz nunca devera ser excluido, porem seu arranjo de filhos podera ser excluido caso este no nao possua filhos (trie sem nenhuma palavra) e, neste caso, seu campo filhos devera ser atualizado para NULL.
 */
 
-void excluirTodasAux(PONT pAux, PONT pUltimo, int i, char* palavra){
+void excluirTodasAux(PONT pAux, int i, int n, char* palavra){
 	
-	if (pAux != pUltimo){
+	// não é ultima letra da palavra
+	if (i != n){
 		int letra = palavra[i+1] - VALOR_a;
-		excluirTodasAux(pAux->filhos[letra], pUltimo, i+1, palavra);
-		pAux->filhos[letra] = NULL;
+		excluirTodasAux(pAux->filhos[letra], i+1, n, palavra);
 	}
 
-	if(pAux->filhos != NULL){
-		free(pAux->filhos);
-		pAux->filhos = NULL;
-	}
+	if(pAux->filhos != NULL) free(pAux->filhos);
 	free(pAux);
+
 	return;
 }
 
@@ -271,11 +271,14 @@ void excluirTodas(PONT raiz, char* palavra, int n){
 	}
 	// ultima letra
 
+	// a palavra não existe
+	if(p->contador == 0) return;
+
 	// não tem filhos (é a ultima palavra)
 	if (p->filhos == NULL){
-		printf("jfa9eifjaeji0\n");
+		
 		// excluir nodes não pertencentes a palavras
-		PONT pDiverge = raiz;
+		PONT pDiverge = raiz; // primeiro nó não pertencente
 		PONT pAnterior = NULL;
 		int letra;
 		int i=0;
@@ -291,12 +294,21 @@ void excluirTodas(PONT raiz, char* palavra, int n){
 			pDiverge = pDiverge->filhos[palavra[0]];
 
 		// excluir a partir do primeiro node não pertencente a palavra
-		excluirTodasAux(pDiverge, p, i, palavra);
+		excluirTodasAux(pDiverge, i, n-1, palavra);
 
 		// setar node anterior ao pDivergente
 		if (pAnterior != NULL){
-			if (contarPalavrasDiferentes(pAnterior) == 1) pAnterior->filhos = NULL;
-			else pAnterior->filhos[letra] = NULL;
+			pAnterior->filhos[letra] = NULL;
+
+			// checar se ainda há filhos no array
+			bool temFilhos = false;
+			for(int j=0; j<LETRAS; j++)
+				if (pAnterior->filhos[j]) temFilhos = true;
+
+			if(temFilhos){
+				free(pAnterior->filhos);
+				pAnterior->filhos = NULL;
+			}
 		}
 	}
 
@@ -324,8 +336,11 @@ void excluir(PONT raiz, char* palavra, int n){
 		}
 		p = p->filhos[letra];
 	}
+	// ultimo nó
 	
-	if(contarPalavrasDiferentes(p)>1) excluirTodas(raiz, palavra, n);
+	// se a palavra existir e o contador valer 1 (um) antes da exclusão, então a exclusão terá o mesmo comportamento da função excluirTodas.
+	if(p->contador == 1) excluirTodas(raiz, palavra, n);
+	
 	else p->contador--;
 }
 
